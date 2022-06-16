@@ -1,9 +1,9 @@
 import java.time.LocalDateTime;
-import java.util.*;
+
 
 
 public class Order {
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+
 
         OrderStatus status;
         int numberOfOrder;
@@ -24,9 +24,6 @@ public class Order {
         public String toString() {
             return "\n" + numberOfOrder + " " + dateOfCreateOrder + " " + dateOfOrderUpdate + " "+status;
         }
-    public int hashCode() {
-        return (int) numberOfOrder * dateOfCreateOrder.hashCode() * dateOfOrderUpdate.hashCode() * status.hashCode();
-    }
         public int getNumberOfOrder(){
             return numberOfOrder;
         }

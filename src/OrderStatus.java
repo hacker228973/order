@@ -6,25 +6,44 @@ public enum OrderStatus {
         public String toString() {
             return "New";
         }
+
     },
     IN_PROGRESS {
         @Override
         public String toString() {
             return "In Progress";
         }
+
     },
     FINISHED {
         @Override
         public String toString() {
             return "Finished";
         }
+
     },
     FAILED {
         @Override
         public String toString() {
             return "Failed";
         }
+
     };
+    public static int getValue(OrderStatus e){
+        if (e == NEW){
+            return 1;
+        }
+        if (e == IN_PROGRESS){
+            return 2;
+        }
+        if (e == FINISHED){
+            return 3;
+        }
+        if (e == FAILED){
+            return 4;
+        }
+        return 1;
+    }
     public static String getName(OrderStatus e) {
         return e.toString();
     }
@@ -37,6 +56,7 @@ public enum OrderStatus {
         }
         return OrderStatus.NEW;
     }
+
 
 
 
