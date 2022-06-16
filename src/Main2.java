@@ -16,7 +16,6 @@ public class Main2 {
         PrintWriter pw = null;
         BufferedReader br = null;
         try {
-            pw = new PrintWriter("file.txt");
             br = new BufferedReader(new FileReader("file.txt"));
         } catch (IOException e) {
             System.out.println("Exception " + e);
@@ -29,6 +28,16 @@ public class Main2 {
         }
         Scanner scanner = new Scanner(System.in);
         System.out.println("Запись");
+        record(br,orders);
+
+
+        File file = new File("file.txt");
+
+        addOrder(orders, scanner);
+        addOrder(orders, scanner);
+        addOrder(orders, scanner);
+    }
+    public static void record(BufferedReader br, ArrayList<Order> orders){
         try {
             String line = br.readLine();
             while (br.readLine() == null) {
@@ -46,19 +55,15 @@ public class Main2 {
         } catch (IOException e) {
             System.out.println("Exception " + e);
         }
-
-
-        File file = new File("file.txt");
-
-        addOrder(orders, scanner);
-        addOrder(orders, scanner);
-        addOrder(orders, scanner);
     }
-
     public static void addOrder(ArrayList<Order> orders, Scanner scanner) {
         System.out.println("Введите номер заказа");
         int numberOfOrder = scanner.nextInt();
         orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
+
+        System.out.println(orders);
+    }
+    public void upgrade(ArrayList<Order> orders){
         PrintWriter pw=null;
         try {
             pw = new PrintWriter("file.txt");
@@ -67,9 +72,7 @@ public class Main2 {
         }
         pw.println(orders);
         pw.close();
-        System.out.println(orders);
     }
-
 
 //    public static void addOrder(ArrayList<Order> orders, Scanner scanner, File file) {
 //        System.out.println("Введите номер заказа");
