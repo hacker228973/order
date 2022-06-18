@@ -30,19 +30,16 @@ public enum OrderStatus {
 
     };
     public static int getValue(OrderStatus e){
-        if (e == NEW){
-            return 1;
+        switch (e){
+            case IN_PROGRESS:
+                return 2;
+            case FINISHED:
+                return 3;
+            case FAILED:
+                return 4;
+            default:
+                return 1;
         }
-        if (e == IN_PROGRESS){
-            return 2;
-        }
-        if (e == FINISHED){
-            return 3;
-        }
-        if (e == FAILED){
-            return 4;
-        }
-        return 1;
     }
     public static String getName(OrderStatus e) {
         return e.toString();
