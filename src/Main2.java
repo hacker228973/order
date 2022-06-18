@@ -5,30 +5,32 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main2 {
+    static String file = "file.txt";
     public static void main(String[] args) {
         ArrayList<Order> orders = new ArrayList<>();
-
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Запись");
         record(orders);
         System.out.println(orders);
 
-        File file = new File("file.txt");
+        while(true){
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Введите номер заказа");
+            String strNumberOfOrder = scanner.nextLine();
+            if(Objects.equals(strNumberOfOrder, "exit")){
+                break;
+            }
+            addOrderInFile(orders,strNumberOfOrder,scanner);
+        }
 
-        addOrder(orders, scanner);
-
-        upgrade(orders);
+        writingOrdersToTheFile(orders);
 
     }
 
     public static void record(ArrayList<Order> orders) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
             String str;
             while ((str = br.readLine()) != null) {
@@ -43,22 +45,20 @@ public class Main2 {
                 orders.add(new Order(number, dateOfCreate, dateOfUpdate, status));
 
             }
-            br.close();
+
         } catch (IOException e) {
-            System.out.println("Exception " + e);
+            e.printStackTrace();
         }
     }
 
-    public static void addOrder(ArrayList<Order> orders, Scanner scanner) {
-        System.out.println("Введите номер заказа");
-        int numberOfOrder = scanner.nextInt();
-        if (orders.size() == 0) {
-            orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
-            System.out.println(orders);
-        } else {
-            for (int i = 0; i < orders.size(); i++) {
-                if (orders.get(i).getNumberOfOrder() == numberOfOrder) {
-                    scanner = new Scanner(System.in);
+
+
+    public static void addOrderInFile(ArrayList<Order> orders,String strNumberOfOrder,Scanner scanner) {
+
+        int numberOfOrder = Integer.parseInt(strNumberOfOrder);
+        if (orders.size() != 0) {
+            for (Order order : orders) {
+                if (order.getNumberOfOrder() == numberOfOrder) {
 
                     for (OrderStatus status : EnumSet.allOf(OrderStatus.class)) {
                         System.out.println(status);
@@ -67,33 +67,29 @@ public class Main2 {
                     System.out.println("Введите новый Статус");
                     String newStatus = scanner.nextLine();
                     OrderStatus status = OrderStatus.getStatus(newStatus);
-                    if( OrderStatus.getValue(status)< OrderStatus.getValue(orders.get(i).status)){
-                        System.out.println("Вы не можете поменять заказ на более ранию стадию его развития");
-                        return;
+                    if (OrderStatus.getValue(status) < OrderStatus.getValue(order.status)) {
+                        throw new IllegalArgumentException("Вы не можете поменять заказ на более ранию стадию его развития");
                     }
-                    LocalDateTime date = orders.get(i).dateOfCreateOrder;
-                    orders.remove(i);
-                    orders.add(new Order(numberOfOrder, date, LocalDateTime.now(), OrderStatus.getStatus(newStatus)));
-                    System.out.println("Установлен новый статус " + orders.get(i).status);
+                    order.status = status;
                     return;
                 }
             }
-            orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
-            System.out.println(orders);
-
 
         }
+        orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
+        System.out.println(orders);
 
 
     }
 
-    public static void upgrade(ArrayList<Order> orders) {
+    public static void writingOrdersToTheFile(ArrayList<Order> orders) {
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter("file.txt");
+            pw = new PrintWriter(file);
         } catch (IOException e) {
             System.out.println("Exception " + e);
         }
+        assert pw != null;
         pw.println(orders);
         pw.close();
     }

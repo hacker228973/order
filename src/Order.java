@@ -27,5 +27,8 @@ public class Order {
         public int getNumberOfOrder(){
             return numberOfOrder;
         }
+        public OrderStatus changeStatus(OrderStatus e){
+            return e;
+        }
     }
 
