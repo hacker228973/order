@@ -10,26 +10,28 @@ import java.util.Scanner;
 
 public class Main2 {
     static String file = "file.txt";
+
     public static void main(String[] args) {
-        ArrayList<Order> orders = new ArrayList<>();
-        record(orders);
+        ArrayList<Order> orders;
+        orders = readOrdersFromFile();
         System.out.println(orders);
 
-        while(true){
+        while (true) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Введите номер заказа");
             String strNumberOfOrder = scanner.nextLine();
-            if(Objects.equals(strNumberOfOrder, "exit")){
+            if (Objects.equals(strNumberOfOrder, "exit")) {
                 break;
             }
-            addOrderInFile(orders,strNumberOfOrder,scanner);
+            addOrderInFile(orders, strNumberOfOrder);
         }
 
         writingOrdersToTheFile(orders);
 
     }
 
-    public static void record(ArrayList<Order> orders) {
+    public static ArrayList<Order> readOrdersFromFile() {
+        ArrayList<Order> newOrders = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
             String str;
@@ -42,20 +44,19 @@ public class Main2 {
                 LocalDateTime dateOfCreate = LocalDateTime.parse(arr[1], DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
                 LocalDateTime dateOfUpdate = LocalDateTime.parse(arr[2], DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
                 OrderStatus status = OrderStatus.getStatus(arr[3]);
-                orders.add(new Order(number, dateOfCreate, dateOfUpdate, status));
+                newOrders.add(new Order(number, dateOfCreate, dateOfUpdate, status));
 
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return newOrders;
     }
 
 
-
-    public static void addOrderInFile(ArrayList<Order> orders,String strNumberOfOrder,Scanner scanner) {
-
-        int numberOfOrder = Integer.parseInt(strNumberOfOrder);
+    public static void findOrderIndex(ArrayList<Order> orders, int numberOfOrder) {
+        Scanner scanner = new Scanner(System.in);
         if (orders.size() != 0) {
             for (Order order : orders) {
                 if (order.getNumberOfOrder() == numberOfOrder) {
@@ -68,9 +69,11 @@ public class Main2 {
                     String newStatus = scanner.nextLine();
                     OrderStatus status = OrderStatus.getStatus(newStatus);
                     if (OrderStatus.getValue(status) < OrderStatus.getValue(order.status)) {
+                        writingOrdersToTheFile(orders);
                         throw new IllegalArgumentException("Вы не можете поменять заказ на более ранию стадию его развития");
                     }
                     order.status = status;
+                    System.out.println(orders);
                     return;
                 }
             }
@@ -78,6 +81,12 @@ public class Main2 {
         }
         orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
         System.out.println(orders);
+    }
+
+    public static void addOrderInFile(ArrayList<Order> orders, String strNumberOfOrder) {
+
+        int numberOfOrder = Integer.parseInt(strNumberOfOrder);
+        findOrderIndex(orders, numberOfOrder);
 
 
     }
