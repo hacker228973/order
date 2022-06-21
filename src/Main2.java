@@ -55,7 +55,7 @@ public class Main2 {
     }
 
 
-    public static void findOrderIndex(ArrayList<Order> orders, int numberOfOrder) {
+    public static boolean findOrderIndexAndChangeStatus(ArrayList<Order> orders, int numberOfOrder) {
         Scanner scanner = new Scanner(System.in);
         if (orders.size() != 0) {
             for (Order order : orders) {
@@ -69,26 +69,25 @@ public class Main2 {
                     String newStatus = scanner.nextLine();
                     OrderStatus status = OrderStatus.getStatus(newStatus);
                     if (OrderStatus.getValue(status) < OrderStatus.getValue(order.status)) {
-                        writingOrdersToTheFile(orders);
                         throw new IllegalArgumentException("Вы не можете поменять заказ на более ранию стадию его развития");
                     }
                     order.status = status;
                     System.out.println(orders);
-                    return;
+                    return false;
                 }
             }
 
         }
-        orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
-        System.out.println(orders);
+        return true;
     }
 
     public static void addOrderInFile(ArrayList<Order> orders, String strNumberOfOrder) {
 
         int numberOfOrder = Integer.parseInt(strNumberOfOrder);
-        findOrderIndex(orders, numberOfOrder);
-
-
+        if(findOrderIndexAndChangeStatus(orders, numberOfOrder)) {
+            orders.add(new Order(numberOfOrder, LocalDateTime.now(), LocalDateTime.now(), OrderStatus.NEW));
+            System.out.println(orders);
+        }
     }
 
     public static void writingOrdersToTheFile(ArrayList<Order> orders) {
